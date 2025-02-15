@@ -4,7 +4,7 @@ project(useless-library LANGUAGES CXX)
 option(BUILD_TESTS "Enable builds of tests" ON)
 
 add_library(base INTERFACE
-    src/distilled_set.hpp
+    src/useless/distilled_set.hpp
 )
 add_library(useless::base ALIAS base)
 target_compile_features(base INTERFACE cxx_std_20)
@@ -20,7 +20,7 @@ if(BUILD_TESTS)
     FetchContent_MakeAvailable(Catch2)
 
     add_executable(tests
-        src/distilled_set.test.cpp
+        src/useless/distilled_set.test.cpp
     )
     target_link_libraries(tests PRIVATE useless::base Catch2::Catch2WithMain)
 endif()
