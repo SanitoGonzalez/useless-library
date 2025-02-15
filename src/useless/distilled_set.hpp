@@ -8,7 +8,7 @@
 namespace useless {
 template<typename ScoreType, typename KeyType>
 class DistilledSet {
-    using ForEachFunction = std::function<void(ScoreType, KeyType key)>;
+    using ForEachFunction = std::function<void(ScoreType, KeyType)>;
 
 public:
     explicit DistilledSet(size_t capacity);
@@ -71,21 +71,22 @@ void DistilledSet<ScoreType, KeyType>::erase(KeyType key) {
 
 template <typename ScoreType, typename KeyType>
 void DistilledSet<ScoreType, KeyType>::for_each(const ForEachFunction& func) {
-    for (const auto& [score, key] : _set) {
+    for (auto iter {_set.rbegin()}; iter != _set.rend(); ++iter) {
+        const auto& [score, key] {*iter};
         func(score, key);
     }
 }
 
 template <typename ScoreType, typename KeyType>
 void DistilledSet<ScoreType, KeyType>::for_each(
-    const size_t offset, const size_t n, const ForEachFunction& func) {
+    const size_t offset, size_t n, const ForEachFunction& func) {
     if (offset >= _set.size()) return;
 
     auto iter {_set.rbegin()};
-    size_t num_advance {std::min(n, _set.size() - offset)};
-    std::advance(iter, num_advance);
+    std::advance(iter, offset);
+    n = std::min(n, _set.size() - offset);
 
-    for (size_t i {0}; i < num_advance; ++i, ++iter) {
+    for (size_t i {0}; i < n; ++i, ++iter) {
         const auto& [score, key] {*iter};
         func(score, key);
     }

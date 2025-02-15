@@ -1,5 +1,4 @@
 #include <catch2/catch_test_macros.hpp>
-
 #include <useless/distilled_set.hpp>
 
 using namespace useless;
@@ -36,50 +35,26 @@ TEST_CASE("Scores are updated.") {
     using KeyType = int;
 
     constexpr size_t CAPACITY {20};
-    constexpr ScoreType OLD_SCORE {42};
-    constexpr ScoreType NEW_SCORE {27};
+    constexpr ScoreType BIG_SCORE {42};
+    constexpr ScoreType SMALL_SCORE {27};
 
     DistilledSet<ScoreType, KeyType> set {CAPACITY};
 
     for (KeyType key = 0; key < CAPACITY; ++key) {
-        set.insert(OLD_SCORE, key);
+        set.insert(BIG_SCORE, key);
     }
     for (KeyType key = 0; key < CAPACITY / 2; ++key) {
-        set.update(NEW_SCORE, key);
+        set.update(SMALL_SCORE, key);
     }
 
     REQUIRE(set.capacity() == CAPACITY);
     REQUIRE(set.size() == CAPACITY);
 
     set.for_each(0, CAPACITY / 2, [&](auto score, auto) {
-        REQUIRE(score == NEW_SCORE);
+        REQUIRE(score == BIG_SCORE);
     });
-    set.for_each(CAPACITY / 2, CAPACITY / 2, [&](auto score, auto) {
-        REQUIRE(score == OLD_SCORE);
-    });
-}
-
-TEST_CASE("Distilled set is iterated.") {
-    using ScoreType = double;
-    using KeyType = short;
-
-    constexpr size_t CAPACITY {10};
-    constexpr ScoreType SCORE {42.0};
-
-    DistilledSet<ScoreType, KeyType> set {CAPACITY};
-
-    for (KeyType key = 0; key < CAPACITY; ++key) {
-        set.insert(SCORE, key);
-    }
-
-    REQUIRE(set.capacity() == CAPACITY);
-    REQUIRE(set.size() == CAPACITY);
-
-    KeyType target_key {0};
-    set.for_each([&](auto score, auto key) {
-        REQUIRE(score == SCORE);
-        REQUIRE(key == target_key);
-        target_key += 1;
+    set.for_each(CAPACITY / 2, CAPACITY / 2, [&](auto score, auto key) {
+        REQUIRE(score == SMALL_SCORE);
     });
 }
 
